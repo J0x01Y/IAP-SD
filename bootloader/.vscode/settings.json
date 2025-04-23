@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "i2c.h": "c",
+        "pca9555.h": "c",
+        "main.h": "c",
+        "bit": "c",
+        "compare": "c",
+        "limits": "c",
+        "new": "c",
+        "watercontrol.h": "c",
+        "typeinfo": "c",
+        "string.h": "c",
+        "cstdlib": "cpp",
+        "mbedtls_config.h": "c",
+        "spi.h": "c"
+    }
+}

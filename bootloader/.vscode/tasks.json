@@ -1,0 +1,55 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "label": "Flash Firmware",
+            "type": "shell",
+            "command": "STM32_Programmer_CLI -c port=swd sn=003000473133510736303739 reset=HWrst -d build/${workspaceFolderBasename}.elf 0x08000000 -hardRst",
+            "group": "none",
+            "problemMatcher": [],
+            "dependsOn": [
+                "Build Project"
+            ],
+        },
+        {
+            "label": "Reset MCU",
+            "type": "shell",
+            "command": "STM32_Programmer_CLI -c port=swd reset=HWrst -rst",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Project",
+            "type": "cmake",
+            "command": "build",
+            "targets": [
+                "all"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOn": [
+                "Clear Console"
+            ],
+        },
+        {
+            "label": "Clean Project",
+            "type": "cmake",
+            "command": "clean",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Clear Console",
+            "type": "shell",
+            "command": "clear",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
