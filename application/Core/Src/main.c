@@ -98,6 +98,10 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
   printf("application %s Start, Build@%s [%s]\r\n", __func__, __DATE__, __TIME__);
+  uint32_t func_addr = *((uint32_t *)0x2000F004);
+  uint32_t opcode = *((uint32_t *)func_addr);
+  
+  printf("mbedtls_free() = 0x%08lX, Opcode = 0x%08lX\r\n", func_addr, opcode);
   Test_ECDSA_Verify();
 
   /* USER CODE END 2 */
