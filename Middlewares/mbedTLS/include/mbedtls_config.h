@@ -3291,11 +3291,11 @@
     #include MBEDTLS_USER_CONFIG_FILE
 #endif
 #include "mbedtls/check_config.h"
-/* USER CODE END 1 */
 
-#ifdef MBEDTLS_LIB_BUILD
-#define memset _crypto_memset
+#include <stddef.h>
+void *_crypto_memset(void *s, int c, size_t n);
 int _crypto_sniprintf(char *buf, size_t size, const char *fmt, ...);
-#endif /* MBEDTLS_LIB_BUILD */
+#define memset _crypto_memset
+/* USER CODE END 1 */
 
 #endif /* MBEDTLS_CONFIG_H */

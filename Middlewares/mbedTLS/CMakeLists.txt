@@ -42,6 +42,8 @@ target_compile_definitions(mbedTLS PUBLIC MBEDTLS_CONFIG_FILE=<mbedtls_config.h>
 target_compile_options(mbedTLS PRIVATE
     -ffunction-sections
     -fdata-sections
+    -fno-builtin
+    -fno-builtin-memset
 )
 
 target_include_directories(mbedTLS PUBLIC

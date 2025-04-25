@@ -46,13 +46,13 @@ set(CRYPTO_CHECK_OK ${CMAKE_BINARY_DIR}/compare_crypto.ok)
 add_custom_command(
     OUTPUT ${CRYPTO_CHECK_OK}
     DEPENDS bootloader application
-    COMMAND ${CMAKE_OBJCOPY} -O binary --only-section=.text.crypto ${CMAKE_BINARY_DIR}/bootloader-build/bootloader.elf ${CMAKE_BINARY_DIR}/boot.crypto
-    COMMAND ${CMAKE_OBJCOPY} -O binary --only-section=.text.crypto ${CMAKE_BINARY_DIR}/application-build/application.elf ${CMAKE_BINARY_DIR}/app.crypto
-    COMMAND ${TOOLCHAIN_PREFIX}objdump -d --section=.text.crypto ${CMAKE_BINARY_DIR}/bootloader-build/bootloader.elf > boot.crypto.asm
-    COMMAND ${TOOLCHAIN_PREFIX}objdump -d --section=.text.crypto ${CMAKE_BINARY_DIR}/application-build/application.elf > app.crypto.asm
-    COMMAND bash ${CMAKE_SOURCE_DIR}/tools/compare_crypto.sh
-        ${CMAKE_BINARY_DIR}/boot.crypto
-        ${CMAKE_BINARY_DIR}/app.crypto
+    COMMAND ${CMAKE_OBJCOPY} -O binary --only-section=.text.crypto bootloader-build/bootloader.elf boot.crypto
+    COMMAND ${CMAKE_OBJCOPY} -O binary --only-section=.text.crypto application-build/application.elf app.crypto
+    COMMAND ${TOOLCHAIN_PREFIX}objdump -d --section=.text.crypto bootloader-build/bootloader.elf > boot.crypto.asm
+    COMMAND ${TOOLCHAIN_PREFIX}objdump -d --section=.text.crypto application-build/application.elf > app.crypto.asm
+    COMMAND bash ${CMAKE_SOURCE_DIR}/Tools/compare_crypto.sh
+        boot.crypto
+        app.crypto
         ${CRYPTO_CHECK_OK}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
