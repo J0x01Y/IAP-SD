@@ -61,8 +61,10 @@ _Min_Stack_Size = 0x800; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 64K
-FLASH (rx)      : ORIGIN = 0x8020000, LENGTH = 128K
+RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 60K
+CRYPTO_RAM (rw)      : ORIGIN = 0x2000F000, LENGTH = 4K
+FLASH (rx)     : ORIGIN = 0x8020000, LENGTH = 128K
+CRYPTO (rx)    : ORIGIN = 0x8010000, LENGTH = 64K
 }
 
 /* Define output sections */
@@ -80,8 +82,8 @@ SECTIONS
   .text :
   {
     . = ALIGN(4);
-    *(.text)           /* .text sections (code) */
-    *(.text*)          /* .text* sections (code) */
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .text)
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .text*)
     *(.glue_7)         /* glue arm to thumb code */
     *(.glue_7t)        /* glue thumb to arm code */
     *(.eh_frame)
@@ -93,12 +95,28 @@ SECTIONS
     _etext = .;        /* define a global symbols at end of code */
   } >FLASH
 
+  .text.crypto :
+  {
+    . = ALIGN(4);
+    KEEP(*libmbedTLS.a:*(.text*))
+    *libmbedTLS.a:*(.text*)
+    . = ALIGN(4);
+  } > CRYPTO
+
+  .rodata.crypto :
+  {
+    . = ALIGN(4);
+    *libmbedTLS.a:*(.rodata)
+    *libmbedTLS.a:*(.rodata*)
+    . = ALIGN(4);
+  } >CRYPTO
+
   /* Constant data goes into FLASH */
   .rodata :
   {
     . = ALIGN(4);
-    *(.rodata)         /* .rodata sections (constants, strings, etc.) */
-    *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .rodata)
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .rodata*)
     . = ALIGN(4);
   } >FLASH
 
@@ -155,8 +173,8 @@ SECTIONS
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
-    *(.data)           /* .data sections */
-    *(.data*)          /* .data* sections */
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .data)
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .data*)
     *(.RamFunc)        /* .RamFunc sections */
     *(.RamFunc*)       /* .RamFunc* sections */
 
@@ -172,8 +190,8 @@ SECTIONS
     /* This is used by the startup in order to initialize the .bss secion */
     _sbss = .;         /* define a global symbol at bss start */
     __bss_start__ = _sbss;
-    *(.bss)
-    *(.bss*)
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .bss)
+    *(EXCLUDE_FILE(*libmbedTLS.a:*) .bss*)
     *(COMMON)
 
     . = ALIGN(4);
@@ -192,6 +210,20 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
+  _crypto_sidata = LOADADDR(.data.mbedtls);
+  .data.mbedtls : 
+  {
+    _crypto_sdata = .;
+    *libmbedTLS.a:*(.data*)
+    _crypto_edata = .;
+  } > CRYPTO_RAM AT > FLASH
+
+  .bss.mbedtls (NOLOAD) : ALIGN(4)
+  {
+    _crypto_sbss = .;
+    *libmbedTLS.a:*(.bss*)
+    _crypto_ebss = .;
+  } > CRYPTO_RAM
 
 
   /* Remove information from the standard libraries */

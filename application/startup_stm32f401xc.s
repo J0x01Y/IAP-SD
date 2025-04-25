@@ -31,7 +31,30 @@
 
 .global  g_pfnVectors
 .global  Default_Handler
+.macro INIT_DATA_SEGMENT start_sym, end_sym, load_sym
+  ldr r0, =\start_sym
+  ldr r1, =\end_sym
+  ldr r2, =\load_sym
+  movs r3, #0
+1:
+  ldr r4, [r2, r3]
+  str r4, [r0, r3]
+  adds r3, r3, #4
+  adds r5, r0, r3
+  cmp r5, r1
+  bcc 1b
+.endm
 
+.macro INIT_BSS_SEGMENT start_sym, end_sym
+  ldr r2, =\start_sym
+  ldr r4, =\end_sym
+  movs r3, #0
+2:
+  str r3, [r2]
+  adds r2, r2, #4
+  cmp r2, r4
+  bcc 2b
+.endm
 /* start address for the initialization values of the .data section. 
 defined in linker script */
 .word  _sidata
@@ -44,6 +67,12 @@ defined in linker script */
 /* end address for the .bss section. defined in linker script */
 .word  _ebss
 /* stack used for SystemInit_ExtMemCtl; always internal RAM used */
+
+.word  _crypto_sidata
+.word  _crypto_sdata
+.word  _crypto_edata
+.word  _crypto_sbss
+.word  _crypto_ebss
 
 /**
  * @brief  This is the code that gets called when the processor first
@@ -63,36 +92,10 @@ Reset_Handler:
 /* Call the clock system initialization function.*/
   bl  SystemInit  
 
-/* Copy the data segment initializers from flash to SRAM */  
-  ldr r0, =_sdata
-  ldr r1, =_edata
-  ldr r2, =_sidata
-  movs r3, #0
-  b LoopCopyDataInit
-
-CopyDataInit:
-  ldr r4, [r2, r3]
-  str r4, [r0, r3]
-  adds r3, r3, #4
-
-LoopCopyDataInit:
-  adds r4, r0, r3
-  cmp r4, r1
-  bcc CopyDataInit
-  
-/* Zero fill the bss segment. */
-  ldr r2, =_sbss
-  ldr r4, =_ebss
-  movs r3, #0
-  b LoopFillZerobss
-
-FillZerobss:
-  str  r3, [r2]
-  adds r2, r2, #4
-
-LoopFillZerobss:
-  cmp r2, r4
-  bcc FillZerobss
+  INIT_DATA_SEGMENT _sdata, _edata, _sidata
+  INIT_DATA_SEGMENT _crypto_sdata, _crypto_edata, _crypto_sidata
+  INIT_BSS_SEGMENT _sbss, _ebss
+  INIT_BSS_SEGMENT _crypto_sbss, _crypto_ebss
 
 /* Call static constructors */
     bl __libc_init_array

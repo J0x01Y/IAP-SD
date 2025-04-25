@@ -168,7 +168,7 @@
  *
  * Enable this layer to allow use of alternative memory allocators.
  */
-//#define MBEDTLS_PLATFORM_MEMORY
+#define MBEDTLS_PLATFORM_MEMORY
 
 /**
  * \def MBEDTLS_PLATFORM_NO_STD_FUNCTIONS
@@ -3044,7 +3044,7 @@
 //#define MBEDTLS_PLATFORM_FPRINTF_MACRO      fprintf /**< Default fprintf macro to use, can be undefined */
 #define MBEDTLS_PLATFORM_PRINTF_MACRO        printf /**< Default printf macro to use, can be undefined */
 /* Note: your snprintf must correctly zero-terminate the buffer! */
-//#define MBEDTLS_PLATFORM_SNPRINTF_MACRO    snprintf /**< Default snprintf macro to use, can be undefined */
+#define MBEDTLS_PLATFORM_SNPRINTF_MACRO    _crypto_sniprintf /**< Default snprintf macro to use, can be undefined */
 //#define MBEDTLS_PLATFORM_NV_SEED_READ_MACRO   mbedtls_platform_std_nv_seed_read /**< Default nv_seed_read function to use, can be undefined */
 //#define MBEDTLS_PLATFORM_NV_SEED_WRITE_MACRO  mbedtls_platform_std_nv_seed_write /**< Default nv_seed_write function to use, can be undefined */
 
@@ -3247,7 +3247,7 @@
  * C standards (e.g using memset_s() in C11) or calling a secure memset() from
  * their system (e.g explicit_bzero() in BSD).
  */
-//#define MBEDTLS_PLATFORM_ZEROIZE_ALT
+#define MBEDTLS_PLATFORM_ZEROIZE_ALT
 
 /**
  * Uncomment the macro to let Mbed TLS use your alternate implementation of
@@ -3292,5 +3292,10 @@
 #endif
 #include "mbedtls/check_config.h"
 /* USER CODE END 1 */
+
+#ifdef MBEDTLS_LIB_BUILD
+#define memset _crypto_memset
+int _crypto_sniprintf(char *buf, size_t size, const char *fmt, ...);
+#endif /* MBEDTLS_LIB_BUILD */
 
 #endif /* MBEDTLS_CONFIG_H */

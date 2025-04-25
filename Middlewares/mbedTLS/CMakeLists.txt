@@ -32,19 +32,24 @@ set(mbedTLS_Src
     ${CMAKE_SOURCE_DIR}/library/version_features.c
     ${CMAKE_SOURCE_DIR}/library/x509.c
     ${CMAKE_SOURCE_DIR}/library/x509_crt.c
+    ${CMAKE_SOURCE_DIR}/custom/libc.c
 )
 
 add_library(mbedTLS STATIC)
+
 target_sources(mbedTLS PRIVATE ${mbedTLS_Src})
-target_compile_definitions(mbedTLS PUBLIC MBEDTLS_CONFIG_FILE=<mbedtls_config.h> )
-target_compile_options(mbedTLS PRIVATE "-ffunction-sections" "-fdata-sections")
+target_compile_definitions(mbedTLS PUBLIC MBEDTLS_CONFIG_FILE=<mbedtls_config.h> MBEDTLS_LIB_BUILD )
+target_compile_options(mbedTLS PRIVATE
+    -ffunction-sections
+    -fdata-sections
+)
+
 target_include_directories(mbedTLS PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mbedtls>
     $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:include/mbedtls>
 )
-
 install(
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
   DESTINATION include
